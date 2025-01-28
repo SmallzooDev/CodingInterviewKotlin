@@ -3,18 +3,32 @@
 url=$1
 
 if [ -z "$url" ]; then
-    echo "사용법: ./create-problem.sh <문제_URL>"
+    echo "사용법: ./init.sh <문제_URL>"
     exit 1
 fi
+
+# 문자열을 카멜 케이스로 변환하는 함수
+to_camel_case() {
+    echo "$1" | awk -F'-' '{
+        result=$1
+        for(i=2; i<=NF; i++) {
+            split($i,chars,"")
+            upper=toupper(chars[1])
+            rest=substr($i,2)
+            result=result upper rest
+        }
+        print result
+    }'
+}
 
 # URL에서 사이트 타입 확인
 if [[ $url == *"leetcode.com"* ]]; then
     site="leetcode"
-    # URL에서 문제 이름 추출 (마지막 / 이후, description 이전)
-    problem_name=$(echo $url | sed -E 's/.*\/problems\/([^/]+)\/description.*/\1/')
+    # URL에서 problems/ 이후의 문제 이름만 추출
+    raw_name=$(echo $url | sed -E 's/.*problems\/([^/?]+).*/\1/')
+    problem_name=$(to_camel_case "$raw_name")
 elif [[ $url == *"acmicpc.net"* ]]; then
     site="baekjoon"
-    # URL에서 문제 번호 추출
     problem_name=$(echo $url | sed -E 's/.*\/problem\/([0-9]+).*/\1/')
 else
     echo "지원하지 않는 사이트입니다. (지원: leetcode, acmicpc.net)"
@@ -23,6 +37,12 @@ fi
 
 # 기본 디렉토리 경로
 base_dir="src/main/kotlin/problems/$site/$problem_name"
+
+# 디렉토리가 이미 존재하는지 확인
+if [ -d "$base_dir" ]; then
+    echo "경고: 이미 존재하는 문제입니다: $base_dir"
+    exit 1
+fi
 
 # 디렉토리 생성
 mkdir -p "$base_dir"
