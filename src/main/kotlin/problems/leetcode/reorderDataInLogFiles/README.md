@@ -42,6 +42,6 @@ val people = listOf(
 val sortedPeople = people.sortedWith(
     compareBy(
         { it.name },  // 첫 번째 기준: 이름 (오름차순)
-    { it.age }    // 두 번째 기준: 나이 (오름차순)
-))
+        { it.age }    // 두 번째 기준: 나이 (오름차순)
+    ))
 ```
