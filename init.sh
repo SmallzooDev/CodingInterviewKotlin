@@ -7,9 +7,16 @@ if [ -z "$url" ]; then
     exit 1
 fi
 
-# 문자열을 카멜 케이스로 변환하는 함수
+# 문자열을 카멜 케이스로 변환하고 패키지 이름으로 적합하게 만드는 함수
 to_camel_case() {
-    echo "$1" | awk -F'-' '{
+    # 숫자로 시작하는 경우 'p' 접두사 추가
+    local input=$1
+    if [[ $input =~ ^[0-9] ]]; then
+        input="p$input"
+    fi
+    
+    # 특수문자를 제거하고 카멜케이스로 변환
+    echo "$input" | sed 's/[^a-zA-Z0-9-]//g' | awk -F'-' '{
         result=$1
         for(i=2; i<=NF; i++) {
             split($i,chars,"")
@@ -29,7 +36,8 @@ if [[ $url == *"leetcode.com"* ]]; then
     problem_name=$(to_camel_case "$raw_name")
 elif [[ $url == *"acmicpc.net"* ]]; then
     site="baekjoon"
-    problem_name=$(echo $url | sed -E 's/.*\/problem\/([0-9]+).*/\1/')
+    raw_name=$(echo $url | sed -E 's/.*\/problem\/([0-9]+).*/\1/')
+    problem_name=$(to_camel_case "$raw_name")
 else
     echo "지원하지 않는 사이트입니다. (지원: leetcode, acmicpc.net)"
     exit 1
