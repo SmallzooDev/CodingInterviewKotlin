@@ -24,4 +24,24 @@ class Solution {
 
         return true
     }
+
+    fun isPalindrome2(head: ListNode?): Boolean {
+        if (head == null || head.next == null) return true
+
+        val deque = ArrayDeque<Int>()
+        var currentNode = head
+
+        while (currentNode != null) {
+            deque.addLast(currentNode.`val`)
+            currentNode = currentNode.next
+        }
+
+        while (deque.size > 1) {
+            if (deque.removeFirst() != deque.removeLast()) {
+                return false
+            }
+        }
+
+        return true
+    }
 }
