@@ -68,7 +68,7 @@ EOF
 cat > "$base_dir/README.md" << EOF
 # ${site} ${problem_name}
 ---
-url : ${url}
+> url : ${url}
 EOF
 
 echo "문제 생성 완료: $base_dir"
