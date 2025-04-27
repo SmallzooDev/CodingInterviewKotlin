@@ -34,35 +34,48 @@ if [[ $url == *"leetcode.com"* ]]; then
     # URL에서 problems/ 이후의 문제 이름만 추출
     raw_name=$(echo $url | sed -E 's/.*problems\/([^/?]+).*/\1/')
     problem_name=$(to_camel_case "$raw_name")
-elif [[ $url == *"acmicpc.net"* ]]; then
-    site="baekjoon"
-    raw_name=$(echo $url | sed -E 's/.*\/problem\/([0-9]+).*/\1/')
-    problem_name=$(to_camel_case "$raw_name")
-else
-    echo "지원하지 않는 사이트입니다. (지원: leetcode, acmicpc.net)"
-    exit 1
-fi
-
-# 기본 디렉토리 경로
-base_dir="src/main/kotlin/problems/$site/$problem_name"
-
-# 디렉토리가 이미 존재하는지 확인
-if [ -d "$base_dir" ]; then
-    echo "경고: 이미 존재하는 문제입니다: $base_dir"
-    exit 1
-fi
-
-# 디렉토리 생성
-mkdir -p "$base_dir"
-
-# Solution.kt 파일 생성
-cat > "$base_dir/Solution.kt" << EOF
+    
+    # 기본 디렉토리 경로
+    base_dir="src/main/kotlin/problems/$site/$problem_name"
+    
+    # 디렉토리 생성
+    mkdir -p "$base_dir"
+    
+    # Solution.kt 파일 생성
+    cat > "$base_dir/Solution.kt" << EOF
 package problems.$site.$problem_name
 
 class Solution {
     
 }
 EOF
+elif [[ $url == *"acmicpc.net"* ]]; then
+    site="baekjoon"
+    raw_name=$(echo $url | sed -E 's/.*\/problem\/([0-9]+).*/\1/')
+    problem_name=$(to_camel_case "$raw_name")
+    
+    # 기본 디렉토리 경로
+    base_dir="src/main/kotlin/problems/$site/$problem_name"
+    
+    # 디렉토리 생성
+    mkdir -p "$base_dir"
+    
+    # Main.kt 파일 생성 (백준용 템플릿)
+    cat > "$base_dir/Main.kt" << EOF
+package problems.$site.$problem_name
+
+import java.io.BufferedReader
+import java.io.InputStreamReader
+
+fun main() = with(BufferedReader(InputStreamReader(System.\`in\`))) {
+    // val n = readLine().toInt()
+    close()
+}
+EOF
+else
+    echo "지원하지 않는 사이트입니다. (지원: leetcode, acmicpc.net)"
+    exit 1
+fi
 
 # README.md 파일 생성
 cat > "$base_dir/README.md" << EOF
