@@ -30,7 +30,6 @@ fun main() = with(BufferedReader(InputStreamReader(System.`in`))) {
         val tmp = readLine()!!.split(" ").map { it.toInt() }
         climbers.add(Climber(tmp[0], tmp[1], tmp[2], tmp[3]))
     }
-    climbers.sorted()
     val sortedClimbers = climbers.sorted()
     println(sortedClimbers.take(3).joinToString(" ") { it.id.toString() })
     close()
