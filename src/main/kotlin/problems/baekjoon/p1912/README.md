@@ -1,6 +1,8 @@
 # baekjoon p1912
 ---
 > url : https://www.acmicpc.net/problem/1912
+>
+ref: [link to ref](https://medium.com/@vdongbin/kadanes-algorithm-%EC%B9%B4%EB%8D%B0%EC%9D%B8-%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98-acbc8c279f29)
 
 ## 초기화
 
