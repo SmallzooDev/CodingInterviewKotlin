@@ -1,0 +1,105 @@
+package problems.baekjoon.p2234
+
+import java.io.BufferedReader
+import java.io.InputStreamReader
+
+
+fun main() = with(BufferedReader(InputStreamReader(System.`in`))) {
+    val (x, y) = readLine()!!.split(" ").map { it.toInt() }
+    val graph = mutableListOf<MutableList<Int>>()
+    repeat(y) {
+        graph.add(readLine()!!.split(" ").map { it.toInt() }.toMutableList())
+    }
+
+    val roomId = MutableList(y) { MutableList(x) { -1 } }
+    val roomSizes = mutableListOf<Int>()
+    var roomCount = 0
+
+    for (i in 0 until y) {
+        for (j in 0 until x) {
+            if (roomId[i][j] == -1) {
+                val size = dfs(graph, roomId, i, j, y, x, roomCount)
+                roomSizes.add(size)
+                roomCount++
+            }
+        }
+    }
+
+    val maxRoomSize = roomSizes.maxOrNull() ?: 0
+
+    var maxAfterBreaking = 0
+    val movable = arrayOf(
+        0 to -1, // 서 (비트 0)
+        -1 to 0, // 북 (비트 1)
+        0 to 1,  // 동 (비트 2)
+        1 to 0   // 남 (비트 3)
+    )
+
+    for (i in 0 until y) {
+        for (j in 0 until x) {
+            for (wall in 0 until 4) {
+                if ((1 shl wall) and graph[i][j] != 0) {
+                    val ni = i + movable[wall].first
+                    val nj = j + movable[wall].second
+
+                    if (ni >= 0 && nj >= 0 && ni < y && nj < x) {
+                        val room1 = roomId[i][j]
+                        val room2 = roomId[ni][nj]
+
+                        if (room1 != room2) {
+                            val combinedSize = roomSizes[room1] + roomSizes[room2]
+                            maxAfterBreaking = maxOf(maxAfterBreaking, combinedSize)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    println(roomCount)
+    println(maxRoomSize)
+    println(maxAfterBreaking)
+
+    close()
+}
+
+fun dfs(
+    graph: MutableList<MutableList<Int>>,
+    roomId: MutableList<MutableList<Int>>,
+    y: Int,
+    x: Int,
+    my: Int,
+    mx: Int,
+    currentRoomId: Int
+): Int {
+    val movable = arrayOf(
+        0 to -1, // 서 (비트 0)
+        -1 to 0, // 북 (비트 1)
+        0 to 1,  // 동 (비트 2)
+        1 to 0   // 남 (비트 3)
+    )
+
+    roomId[y][x] = currentRoomId
+    var roomSize = 1
+
+    for (i in 0 until 4) {
+        if ((1 shl i) and graph[y][x] != 0) {
+            continue
+        }
+
+        val ny = y + movable[i].first
+        val nx = x + movable[i].second
+
+        if (ny < 0 || nx < 0 || ny >= my || nx >= mx) {
+            continue
+        }
+
+        if (roomId[ny][nx] != -1) {
+            continue
+        }
+
+        roomSize += dfs(graph, roomId, ny, nx, my, mx, currentRoomId)
+    }
+
+    return roomSize
+}
